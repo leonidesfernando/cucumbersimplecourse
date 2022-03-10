@@ -45,7 +45,7 @@ public class ScenarioOutlineSteps {
     @Then("Final bill amount calculate is {double}")
     public void final_bill_amount_calculate_is(Double  expectedValue) {
         double systemCalculatedValue = BillCalculationHelper.calculateBillCustomer(initialBillAmount, taxRate);
-        assertEquals(String.format("The expectedValue(%d) must be equals to systemCalculatedValue(%f)", expectedValue, systemCalculatedValue),
+        assertEquals(String.format("The expectedValue(%f) must be equals to systemCalculatedValue(%f)", expectedValue, systemCalculatedValue),
                 Double.valueOf(systemCalculatedValue), Double.valueOf(expectedValue));
 
         invokeWebPage(expectedValue);
