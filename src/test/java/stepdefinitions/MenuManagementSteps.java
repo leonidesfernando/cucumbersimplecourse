@@ -1,13 +1,12 @@
 package stepdefinitions;
 
-import cucumber.api.java.da.Men;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import linkedinlearning.cucumbercourse.RestaurantMenu;
 import linkedinlearning.cucumbercourse.RestaurantMenuItem;
 
-import java.util.Collections;
+import java.math.BigDecimal;
 
 import static linkedinlearning.cucumbercourse.RestaurantMenu.DUPLICATE_MESSAGE_EXCEPTION;
 import static org.junit.Assert.assertEquals;
@@ -21,8 +20,8 @@ public class MenuManagementSteps {
         System.out.println("Constructor");
     }
 
-    @Given("I have a menu item with a name \"([^\"]+)\" and price ([$]*)(\\d)+")
-    public void i_have_a_menu_item_with_a_name_and_price(String newMenuItemName, String currencyType, int price) {
+    @Given("I have a menu item with a name \"([^\"]+)\" and price ([$]*)(\\d+(.\\d)*)+")
+    public void i_have_a_menu_item_with_a_name_and_price(String newMenuItemName, String currencyType, BigDecimal price) {
 
         newMenuItem = new RestaurantMenuItem(newMenuItemName, newMenuItemName, price);
         System.out.println("Step 1");

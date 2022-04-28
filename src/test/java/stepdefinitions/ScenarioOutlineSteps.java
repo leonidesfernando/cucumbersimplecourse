@@ -8,13 +8,16 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class ScenarioOutlineSteps {
 
     private int initialBillAmount;
-    private double taxRate;
+    private BigDecimal taxRate;
 
     @Given("I have a customer")
     public void i_have_a_customer() {
@@ -27,31 +30,33 @@ public class ScenarioOutlineSteps {
 
     @Given("Sale Tax Rate is {int} percent")
     public void sale_Tax_Rate_is_percent(Integer taxRate) {
-        this.taxRate = taxRate;
+        this.taxRate = new BigDecimal(taxRate);
     }
 
     @Then("Final bill amount calculate is {int}")
     public void final_bill_amount_calculate_is(Integer expectedValue) {
-        double systemCalculatedValue = BillCalculationHelper.calculateBillCustomer(initialBillAmount, taxRate);
-        assertEquals(String.format("The expectedValue(%d) must be equals to systemCalculatedValue(%f)", expectedValue, systemCalculatedValue),
-                Double.valueOf(systemCalculatedValue), Double.valueOf(expectedValue));
+        BigDecimal expectedValueBigDecimal = BigDecimal.valueOf(expectedValue).setScale(2, RoundingMode.HALF_UP);
+        BigDecimal systemCalculatedValue = BillCalculationHelper.calculateBillCustomer(new BigDecimal(initialBillAmount), taxRate)
+                .setScale(2, RoundingMode.HALF_UP);
+        assertEquals(String.format("The expectedValue(%f) must be equals to systemCalculatedValue(%f)", expectedValueBigDecimal, systemCalculatedValue),
+                systemCalculatedValue, expectedValueBigDecimal);
     }
 
-    @Given("Sale Tax Rate is {double} percent")
-    public void sale_Tax_Rate_is_percent(Double taxRate) {
+    @Given("Sale Tax Rate is {bigdecimal} percent")
+    public void sale_Tax_Rate_is_percent(BigDecimal taxRate) {
         this.taxRate = taxRate;
     }
 
-    @Then("Final bill amount calculate is {double}")
-    public void final_bill_amount_calculate_is(Double  expectedValue) {
-        double systemCalculatedValue = BillCalculationHelper.calculateBillCustomer(initialBillAmount, taxRate);
+    @Then("Final bill amount calculate is {bigdecimal}")
+    public void final_bill_amount_calculate_is(BigDecimal  expectedValue) {
+        BigDecimal systemCalculatedValue = BillCalculationHelper.calculateBillCustomer(new BigDecimal(initialBillAmount), taxRate);
         assertEquals(String.format("The expectedValue(%f) must be equals to systemCalculatedValue(%f)", expectedValue, systemCalculatedValue),
-                Double.valueOf(systemCalculatedValue), Double.valueOf(expectedValue));
+                systemCalculatedValue, expectedValue);
 
         invokeWebPage(expectedValue);
     }
 
-    private void invokeWebPage(double expectedValue){
+    private void invokeWebPage(BigDecimal expectedValue){
         WebDriver driver = SeleniumBootstrap.setupChrome();
         driver.get("http://localhost:8080/calculator/finalBill");
 
@@ -62,7 +67,7 @@ public class ScenarioOutlineSteps {
         billAmount.clear();
         billAmount.sendKeys(Integer.toString(initialBillAmount));
         taxRate.clear();
-        taxRate.sendKeys(Double.toString(this.taxRate));
+        taxRate.sendKeys(this.taxRate.toString());
         btnCalculate.click();
 
         WebElement finalBillCalculated = driver.findElement(By.id("billCalculated"));

@@ -15,7 +15,7 @@ public class DataTableSteps {
 
         for(Map<String, String> map : data){
             for(Map.Entry<String, String> entry : map.entrySet()){
-                System.out.println("Key: " + entry.getKey() + " - Value: " + entry.getValue());
+                System.out.format("| Key: %s - Value: %s |\n", entry.getKey(), entry.getValue());
             }
         }
 
